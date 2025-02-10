@@ -1,0 +1,3 @@
+- [ ] custom tailwind style guide
+- [ ] dark/light themes
+- [ ] improved icons
