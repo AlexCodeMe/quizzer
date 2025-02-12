@@ -13,8 +13,15 @@ function SelectionModal() {
 
   const questions = useMemo(() => {
     return questionsData
-      ? questionsData.filter((question) =>
-          question.question.toLowerCase().includes(searchQuery.toLowerCase())
+      ? questionsData.filter(
+          (question) =>
+            question.question
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            question.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            question.explanation
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase())
         )
       : []
   }, [questionsData, searchQuery])
@@ -103,7 +110,10 @@ function SelectionModal() {
                         </div>
                       </div>
                       <button
-                        onClick={() => addQuestionToQuiz(question)}
+                        onClick={() => {
+                          console.log('Adding existing question:', question)
+                          addQuestionToQuiz(question)
+                        }}
                         className='self-end px-3 py-1 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
                       >
                         Add to Quiz

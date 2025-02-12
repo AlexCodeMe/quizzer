@@ -35,6 +35,7 @@ const Questions = () => {
     console.log('[CreateQuestionForm] question', { question })
 
     if (question) {
+      console.log('Adding new question:', questionState)
       addQuestionToQuiz(questionState)
       setQuestionState({
         question: '',
@@ -126,34 +127,89 @@ const Questions = () => {
             </div>
           </div>
         )}
-        <div className='flex flex-col space-y-2'>
-          <label
-            className='block text-sm font-medium text-gray-700'
-            htmlFor='answer'
-          >
-            {questionState.type !== 'short_answer'
-              ? 'Answer'
-              : 'Example Response'}
-          </label>
-          <input
-            type='text'
-            id='answer'
-            name='answer'
-            placeholder={
-              questionState.type !== 'short_answer'
+        {questionState.type === 'true_false' ? (
+          <div className='space-y-2'>
+            <label className='block text-sm font-medium text-gray-700'>
+              Select Answer
+            </label>
+            <div className='space-y-2'>
+              <div className='flex items-center'>
+                <input
+                  type='radio'
+                  id='true'
+                  name='true-false'
+                  value='true'
+                  checked={questionState.answer === 'true'}
+                  onChange={(e) =>
+                    setQuestionState((prev) => ({
+                      ...prev,
+                      answer: e.target.value,
+                    }))
+                  }
+                  className='h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300'
+                />
+                <label
+                  htmlFor='true'
+                  className='ml-2 block text-sm text-gray-700'
+                >
+                  True
+                </label>
+              </div>
+              <div className='flex items-center'>
+                <input
+                  type='radio'
+                  id='false'
+                  name='true-false'
+                  value='false'
+                  checked={questionState.answer === 'false'}
+                  onChange={(e) =>
+                    setQuestionState((prev) => ({
+                      ...prev,
+                      answer: e.target.value,
+                    }))
+                  }
+                  className='h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300'
+                />
+                <label
+                  htmlFor='false'
+                  className='ml-2 block text-sm text-gray-700'
+                >
+                  False
+                </label>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className='flex flex-col space-y-2'>
+            <label
+              className='block text-sm font-medium text-gray-700'
+              htmlFor='answer'
+            >
+              {questionState.type !== 'short_answer'
                 ? 'Answer'
-                : 'Example Response'
-            }
-            value={questionState.answer}
-            onChange={(e) =>
-              setQuestionState((prev) => ({
-                ...prev,
-                answer: e.target.value,
-              }))
-            }
-            className='mt-1 px-4 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'
-          />
-        </div>
+                : 'Example Response'}
+            </label>
+            <input
+              type='text'
+              id='answer'
+              name='answer'
+              placeholder={
+                questionState.type !== 'short_answer'
+                  ? 'Answer'
+                  : 'Example Response'
+              }
+              value={questionState.answer}
+              onChange={(e) =>
+                setQuestionState((prev) => ({
+                  ...prev,
+                  answer: e.target.value,
+                }))
+              }
+              className='mt-1 px-4 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'
+            />
+          </div>
+        )}
+
         <div className='flex flex-col space-y-2'>
           <label
             htmlFor='explanation'
@@ -175,8 +231,13 @@ const Questions = () => {
             className='mt-1 px-4 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'
           ></textarea>
         </div>
-        <div>
-          <button type='submit'>Add Question</button>
+        <div className='flex justify-end'>
+          <button
+            type='submit'
+            className='inline-flex justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors'
+          >
+            Add Question
+          </button>
         </div>
       </form>
     </div>

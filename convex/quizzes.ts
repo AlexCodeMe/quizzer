@@ -1,15 +1,9 @@
 import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
-import { Doc } from './_generated/dataModel'
 
 export const getQuiz = query({
   args: { _id: v.id('quizzes') },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new Error('Not authorized')
-    }
-
     return ctx.db.get(args._id)
   },
 })
@@ -31,16 +25,37 @@ export const getQuizzes = query({
   },
 })
 
+export const getQuizWithQuestionsAndCreator = query({
+  args: { _id: v.id('quizzes') },
+  handler: async (ctx, args) => {
+    const quiz = await ctx.db.get(args._id)
+
+    if (!quiz) {
+      throw new Error('quiz with id ' + args._id + ' not found')
+    }
+
+    // Get the user who created the quiz
+    const creator = await ctx.db.get(quiz.createdBy)
+
+    const quizQuestions = await ctx.db
+      .query('quizQuestions')
+      .withIndex('by_quiz', (q) => q.eq('quizId', args._id))
+      .collect()
+    console.log('quizQuestions:', quizQuestions)
+    quizQuestions.sort((a, b) => a.order - b.order)
+
+    const questions = await Promise.all(
+      quizQuestions.map((qq) => ctx.db.get(qq.questionId))
+    )
+
+    return { ...quiz, creator, questions }
+  },
+})
+
 export const getQuizWithQuestions = query({
   args: { _id: v.id('quizzes') },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new Error('Not authorized')
-    }
-
     const quiz = await ctx.db.get(args._id)
-
     if (!quiz) {
       throw new Error('quiz with id ' + args._id + ' not found')
     }
@@ -49,10 +64,17 @@ export const getQuizWithQuestions = query({
       .query('quizQuestions')
       .withIndex('by_quiz', (q) => q.eq('quizId', args._id))
       .collect()
+
     quizQuestions.sort((a, b) => a.order - b.order)
 
-    const questions = await Promise.all(
-      quizQuestions.map((qq) => ctx.db.get(qq.questionId))
+    const questionsPromises = quizQuestions.map((qq) =>
+      ctx.db.get(qq.questionId)
+    )
+
+    const questionResults = await Promise.all(questionsPromises)
+
+    const questions = questionResults.filter(
+      (q): q is NonNullable<typeof q> => q !== null
     )
 
     return { ...quiz, questions }
@@ -90,13 +112,13 @@ export const createQuiz = mutation({
     })
 
     await Promise.all(
-      args.questionIds.map((questionId, idx) =>
+      args.questionIds.map(async (questionId, idx) => {
         ctx.db.insert('quizQuestions', {
           quizId: quiz,
           questionId,
           order: idx,
         })
-      )
+      })
     )
 
     // update userQuizzes table

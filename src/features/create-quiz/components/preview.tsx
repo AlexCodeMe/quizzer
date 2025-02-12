@@ -1,19 +1,14 @@
 import React from 'react'
-import { Question } from '../../../../convex/schema'
 import { useCreateQuiz } from '../hooks/use-create-quiz'
 import { Trash2 } from 'lucide-react'
 
-interface PreviewProps {
-  quizState: {
-    name: string
-    description: string
-    topic: string
-    questions: Question[]
-  }
-}
-
 const Preview = () => {
-  const { quizState, removeQuestionFromQuiz } = useCreateQuiz()
+  const { quizState, removeQuestionFromQuiz, clearQuestionsFromQuiz } =
+    useCreateQuiz()
+
+  const handleClearQuestions = () => {
+    clearQuestionsFromQuiz()
+  }
 
   return (
     <div className='space-y-6 mt-10'>
@@ -32,7 +27,10 @@ const Preview = () => {
         </p>
       </div>
       <div className='bg-white shadow rounded-lg p-6'>
-        <h2 className='text-2xl font-bold mb-4'>Questions</h2>
+        <div className='flex items-center justify-between'>
+          <h2 className='text-2xl font-bold mb-4'>Questions</h2>
+          <button onClick={handleClearQuestions}>Clear Questions</button>
+        </div>
         <div className='space-y-4'>
           {quizState.questions.length === 0 ? (
             <>

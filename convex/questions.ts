@@ -9,10 +9,16 @@ export const createQuestions = mutation({
     if (!identity) {
       throw new Error('Not authorized')
     }
+    // todo: filter out questions that are already in convex
 
-    return await Promise.all(
-      args.questions.map((question) => ctx.db.insert('questions', question))
+    const questionIds = await Promise.all(
+      args.questions.map(async (question) => {
+
+        return await ctx.db.insert('questions', question)
+      })
     )
+
+    return questionIds
   },
 })
 

@@ -37,6 +37,7 @@ export const resultsFields = {
   details: v.record(v.id('questions'), v.union(v.boolean(), v.string())),
   userId: v.id('users'),
   quizId: v.id('quizzes'),
+  completedAt: v.number(),
 }
 
 export const userValidator = v.object(userFields)

@@ -13,11 +13,6 @@ const steps = [
   { title: 'Review', component: Review },
 ]
 
-const desktopSteps = [
-  { title: 'Basic Info', component: BasicInfo },
-  { title: 'Questions', component: Questions },
-]
-
 const QuizCreator = () => {
   const [currentStep, setCurrentStep] = useState(0)
   const CurrentStep = steps[currentStep].component

@@ -14,7 +14,6 @@ type IFormState = {
 const GenerationModal = () => {
   const {
     loading,
-    error,
     isGenerateModalOpen,
     addQuestionToQuiz,
     toggleModal,

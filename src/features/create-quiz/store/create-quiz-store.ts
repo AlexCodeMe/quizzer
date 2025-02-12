@@ -2,13 +2,14 @@
 
 import { create } from 'zustand'
 import { Question } from '../../../../convex/schema'
+import { Doc } from '../../../../convex/_generated/dataModel'
 
 type CreateQuizStore = {
   quizState: {
     name: string
     description: string
     topic: string
-    questions: Question[]
+    questions: (Question | Doc<'questions'>)[]
   }
   isSelectionModalOpen: boolean
   isGenerateModalOpen: boolean

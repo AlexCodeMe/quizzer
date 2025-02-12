@@ -2,18 +2,14 @@ import { fetchQuery } from 'convex/nextjs'
 import { api } from '../../../convex/_generated/api'
 import QuizCard from '@/features/explore/components/quiz-card'
 import SearchInput from '@/features/explore/components/search-input'
-import { auth, currentUser } from '@clerk/nextjs/server'
 
 interface ExplorePageProps {
-  searchParams: {
-    search?: string
-  }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+
 }
 
 async function ExplorePage({ searchParams }: ExplorePageProps) {
-  const user = await currentUser()
-
-  const searchTerm = searchParams.search || ''
+  const searchTerm = (await searchParams).search?.toString() || ''
 
   const quizData = await fetchQuery(api.quizzes.getQuizzes, {
     search: searchTerm,

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { api } from '../../../../convex/_generated/api'
 import { useCreateQuizStore } from '../store/create-quiz-store'
 import { Question } from '../../../../convex/schema'
+import { Doc } from '../../../../convex/_generated/dataModel'
 
 export const useCreateQuiz = () => {
   const router = useRouter()
@@ -14,7 +15,6 @@ export const useCreateQuiz = () => {
   const createQuiz = useMutation(api.quizzes.createQuiz)
   const createQuestions = useMutation(api.questions.createQuestions)
   const generate = useAction(api.ai.generate)
-  const addQuestionsToQuiz = useMutation(api.questions.addQuestionsToQuiz)
 
   const store = useCreateQuizStore()
 
@@ -47,19 +47,28 @@ export const useCreateQuiz = () => {
     setError(null)
     try {
       const quizState = store.quizState
+      console.log(
+        'Quiz state questions:',
+        JSON.stringify(quizState.questions, null, 2)
+      )
+
+      const filteredQuestions = quizState.questions.filter(
+        (q) => !('_id' in q) && !('_creationTime' in q)
+      )
+
+      const existingQuestionIds = quizState.questions
+        .filter((q): q is Doc<'questions'> => '_id' in q)
+        .map((q) => q._id)
+
       const questionIds = await createQuestions({
-        questions: quizState.questions,
+        questions: filteredQuestions,
       })
+
       const quizId = await createQuiz({
         name: quizState.name,
         description: quizState.description,
         topic: quizState.topic,
-        questionIds,
-      })
-
-      await addQuestionsToQuiz({
-        questionIds,
-        quizId,
+        questionIds: [...existingQuestionIds, ...questionIds],
       })
 
       store.resetQuizState()

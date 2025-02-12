@@ -1,15 +1,9 @@
 'use client'
 
 import { ReactNode } from 'react'
-import {
-  Authenticated,
-  AuthLoading,
-  ConvexReactClient,
-  Unauthenticated,
-} from 'convex/react'
+import { ConvexReactClient } from 'convex/react'
 import { ConvexProviderWithClerk } from 'convex/react-clerk'
-import { ClerkProvider, SignIn, useAuth } from '@clerk/nextjs'
-import { Loader } from 'lucide-react'
+import { ClerkProvider, useAuth } from '@clerk/nextjs'
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
