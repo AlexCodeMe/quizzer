@@ -13,12 +13,18 @@ export const createQuestions = mutation({
 
     const questionIds = await Promise.all(
       args.questions.map(async (question) => {
-
         return await ctx.db.insert('questions', question)
       })
     )
 
     return questionIds
+  },
+})
+
+export const getQuestion = query({
+  args: { _id: v.id('questions') },
+  handler: async (ctx, args) => {
+    return ctx.db.get(args._id)
   },
 })
 

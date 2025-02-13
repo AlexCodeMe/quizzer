@@ -2,10 +2,10 @@ import { fetchQuery } from 'convex/nextjs'
 import { api } from '../../../convex/_generated/api'
 import QuizCard from '@/features/explore/components/quiz-card'
 import SearchInput from '@/features/explore/components/search-input'
+import ResultsGrid from '@/features/explore/components/result-grid'
 
 interface ExplorePageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-
 }
 
 async function ExplorePage({ searchParams }: ExplorePageProps) {
@@ -26,15 +26,11 @@ async function ExplorePage({ searchParams }: ExplorePageProps) {
           ))}
         </div>
       </div>
-      <div>
-        <h1 className='text-3xl font-bold'>Your Results</h1>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6'>
-          {quizData.map((quiz) => (
-            <QuizCard key={quiz._id} quiz={quiz} />
-          ))}
-        </div>
+      <div className='mt-12'>
+        <h1 className='text-3xl font-bold mb-6'>Your Results</h1>
+        <ResultsGrid />
       </div>
-      <div>
+      <div className='mt-12'>
         <h1 className='text-3xl font-bold mb-6'>All Quizzes</h1>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6'>
           {quizData.map((quiz) => (

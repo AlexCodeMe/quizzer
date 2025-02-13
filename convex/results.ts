@@ -2,10 +2,6 @@ import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
 import { Id } from './_generated/dataModel'
 
-// todo: quiz/[id]/results/page.tsx needs quiz details and the user's results
-// todo: results/[resultId]/page.tsx needs the result details, quiz details included who created the quiz
-// todo: results/page.tsx needs all the results for the user
-
 export const makeResult = mutation({
   args: {
     quizId: v.id('quizzes'),
@@ -49,7 +45,10 @@ export const makeResult = mutation({
       }
     }
     // score
-    const score = Object.values(details).filter(Boolean).length
+    const score =
+      (Object.values(details).filter(Boolean).length /
+        Object.keys(details).length) *
+      100
     // userId
     // quizId
     const result = await ctx.db.insert('results', {
@@ -78,12 +77,15 @@ export const getResult = query({
       throw new Error('quiz not found')
     }
 
-    const questions = await ctx.db
-      .query('quizQuestions')
-      .withIndex('by_quiz', (q) => q.eq('quizId', result.quizId))
-      .collect()
+    const details = await Promise.all(
+      Object.entries(result.details).map(async ([qid, detail]) => {
+        const questionId = qid as unknown as Id<'questions'>
+        const question = await ctx.db.get(questionId)
+        return { question, detail }
+      })
+    )
 
-    return { result, quiz, questions }
+    return { result, quiz, details }
   },
 })
 
@@ -145,5 +147,27 @@ export const getResultsByQuiz = query({
       .collect()
 
     return results.filter((result) => result.userId === user._id)
+  },
+})
+
+export const getResultsByClerkId = query({
+  args: { userId: v.id('users') },
+  handler: async (ctx, args) => {
+    const results = await ctx.db
+      .query('results')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .collect()
+
+    const resultsWithQuiz = await Promise.all(
+      results.map(async (result) => {
+        const quiz = await ctx.db.get(result.quizId)
+        return {
+          ...result,
+          quiz,
+        }
+      })
+    )
+
+    return { resultsWithQuiz }
   },
 })

@@ -17,17 +17,24 @@ const QuizAnswers = ({ resultId }: QuizAnswersProps) => {
     return <div>Quiz not found</div>
   }
 
-  //   const { quiz, result } = data
+  const { quiz, details } = data
 
   return (
     <div className='bg-white shadow rounded-lg p-6'>
-      <h2 className='text-2xl font-semibold mb-4'>Your Answers</h2>
+      <h2 className='text-2xl font-semibold mb-4'>
+        Your Answers to {quiz.name}
+      </h2>
       <ul className='space-y-4'>
-        {/* {quiz?.questions.map((question) => (
-          <li key={question._id}>
-            <div className='flex justify-between items-center mb-2'></div>
-          </li> 
-        ))} */}
+        {details.map(({ question, detail }, index) => (
+          <div key={question?._id}>
+            <p>
+              Question {index + 1}: {question?.question}
+            </p>
+            <p>Correct answer: {question?.answer}</p>
+            <p>You answered: {detail ? 'Correctly' : 'Incorrectly'}</p>
+            <p>{question?.explanation}</p>
+          </div>
+        ))}
       </ul>
     </div>
   )

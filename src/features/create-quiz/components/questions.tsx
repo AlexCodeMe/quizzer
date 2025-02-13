@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import { Question } from '../../../../convex/schema'
 import { useCreateQuiz } from '../hooks/use-create-quiz'
-import { useMutation } from 'convex/react'
-import { api } from '../../../../convex/_generated/api'
 import GenerationModal from './generation-modal'
 import SelectionModal from './selection-modal'
 
@@ -17,8 +15,6 @@ const Questions = () => {
 
   const { addQuestionToQuiz } = useCreateQuiz()
 
-  const createQuestion = useMutation(api.questions.createQuestions)
-
   const handleOptionChange = (index: number, value: string) => {
     setQuestionState((prev) => {
       const options = [...prev.options!]
@@ -30,21 +26,14 @@ const Questions = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const [question] = await createQuestion({ questions: [questionState] })
-
-    console.log('[CreateQuestionForm] question', { question })
-
-    if (question) {
-      console.log('Adding new question:', questionState)
-      addQuestionToQuiz(questionState)
-      setQuestionState({
-        question: '',
-        answer: '',
-        type: 'multiple_choice',
-        options: ['', '', '', ''],
-        explanation: '',
-      })
-    }
+    addQuestionToQuiz(questionState)
+    setQuestionState({
+      question: '',
+      answer: '',
+      type: 'multiple_choice',
+      options: ['', '', '', ''],
+      explanation: '',
+    })
   }
 
   return (

@@ -70,9 +70,7 @@ export const getQuizWithQuestions = query({
     const questionsPromises = quizQuestions.map((qq) =>
       ctx.db.get(qq.questionId)
     )
-
     const questionResults = await Promise.all(questionsPromises)
-
     const questions = questionResults.filter(
       (q): q is NonNullable<typeof q> => q !== null
     )
